@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "rootDir": "./app",
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "files": [
+    "app/models/pai/pai-type.ts",
+    "app/models/pai/pai.ts",
+    "app/models/pai/suupai.ts",
+    "app/models/pai/abstract-suupai.ts",
+    "app/models/pai/souzu.ts",
+    "app/models/pai/manzu.ts",
+    "app/models/pai/pinzu.ts",
+    "app/models/pai/exception/suupai-number-out-of-bound-exception.ts"
+  ]
+}
