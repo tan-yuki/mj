@@ -18,4 +18,8 @@ export abstract class AbstractSuupai implements Suupai {
   getPaiType(): PaiType {
     return this.paiType;
   }
+
+  getName(): string {
+    return this.num + this.getPaiType().getNameSuffix();
+  }
 }

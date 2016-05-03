@@ -1,26 +1,37 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "rootDir": "./app",
-    "outDir": "./dist"
-  },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
-  "files": [
-    "app/models/pai/pai-type.ts",
-    "app/models/pai/pai.ts",
-    "app/models/pai/suupai.ts",
-    "app/models/pai/abstract-suupai.ts",
-    "app/models/pai/souzu.ts",
-    "app/models/pai/manzu.ts",
-    "app/models/pai/pinzu.ts",
-    "app/models/pai/exception/suupai-number-out-of-bound-exception.ts"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "rootDir": "./app",
+        "outDir": "./dist"
+    },
+    "exclude": [
+        "/Users/cw-tanaka/src/mj/node_modules",
+        "/Users/cw-tanaka/src/mj/dist"
+    ],
+    "filesGlob": [
+        "app/**/*.ts"
+    ],
+    "files": [
+        "app/domain/model/haipai/exception/shouhai-exception.ts",
+        "app/domain/model/haipai/exception/tahai-exception.ts",
+        "app/domain/model/haipai/haipai.ts",
+        "app/domain/model/pai/abstract-suupai.ts",
+        "app/domain/model/pai/exception/suupai-number-out-of-bound-exception.ts",
+        "app/domain/model/pai/jihai.ts",
+        "app/domain/model/pai/manzu.ts",
+        "app/domain/model/pai/pai-collection.ts",
+        "app/domain/model/pai/pai-type.ts",
+        "app/domain/model/pai/pai-yama.ts",
+        "app/domain/model/pai/pai.ts",
+        "app/domain/model/pai/pinzu.ts",
+        "app/domain/model/pai/souzu.ts",
+        "app/domain/model/pai/suupai.ts",
+        "app/util/collection/abstract-collection.ts",
+        "app/util/collection/collection.ts"
+    ]
 }
