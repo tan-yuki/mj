@@ -14,6 +14,19 @@ export abstract class AbstractCollection<T> implements Collection<T> {
     return this.newInstance(newEntities);
   }
 
+  groupBy(cb: (e:T) => any): {[key:string]: Array<T>} {
+    return lodash.groupBy(this.getEntities(), cb);
+  }
+
+  deleteFirstElementWith(cb: (e:T) => boolean): Collection<T> {
+    let index = lodash.findIndex(this.getEntities(), cb);
+    if (index > -1) {
+      return this.deleteAt(index);
+    }
+
+    return this;
+  }
+
   deleteAt(index: number): Collection<T> {
     let newEntities = this.createClonedEntities();
     let befores = newEntities.splice(0, index);

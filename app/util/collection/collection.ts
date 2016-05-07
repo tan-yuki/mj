@@ -5,4 +5,6 @@ export interface Collection<T> {
   toArray(): Array<T>;
   length(): number;
   get(index: number): T;
+  deleteFirstElementWith(cb: (e:T) => boolean): Collection<T>;
+  groupBy(cb: (e:T) => any): {[key:string]: Array<T>};
 }
