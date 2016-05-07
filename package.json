@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "test": "npm run test",
   "scripts": {
     "clean": "rm -rf ./dist/",
     "build": "npm run clean && tsconfig -u && tsc -p ./",

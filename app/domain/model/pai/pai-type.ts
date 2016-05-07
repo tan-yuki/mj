@@ -1,6 +1,11 @@
 export class PaiType {
-  constructor(private sortIndex:number,
-             private nameSuffix:string = '') {
+  constructor(private name:string,
+              private sortIndex:number,
+              private nameSuffix:string = '') {
+  }
+
+  getName() {
+    return this.name;
   }
 
   getSortIndex() {
@@ -11,8 +16,8 @@ export class PaiType {
     return this.nameSuffix;
   }
 
-  static MANZU = new PaiType(1, '萬');
-  static PINZU = new PaiType(2, '筒');
-  static SOUZU = new PaiType(3, '索');
-  static JIHAI = new PaiType(4);
+  static MANZU = new PaiType('萬子', 1, '萬');
+  static PINZU = new PaiType('筒子', 2, '筒');
+  static SOUZU = new PaiType('索子', 3, '索');
+  static JIHAI = new PaiType('字牌', 4);
 }

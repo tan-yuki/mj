@@ -1,14 +1,13 @@
 import {Suupai} from "./suupai";
+import {AbstractPai} from "./abstract-pai";
 import {PaiType} from "./pai-type";
-import {SuupaiNumberOutOfBoundException} from "./exception/suupai-number-out-of-bound-exception";
 
-export abstract class AbstractSuupai implements Suupai {
+export abstract class AbstractSuupai extends AbstractPai implements Suupai {
   constructor(private paiType: PaiType,
               private num: number
              ) {
-    if (num < 1 || num > 9) {
-      throw new SuupaiNumberOutOfBoundException(`数牌の数値が不正: ${num}`);
-    }
+    super();
+    console.assert(1 <= num && num <= 9, `数配の数が不正です`);
   }
 
   getNumber(): number {
@@ -20,6 +19,11 @@ export abstract class AbstractSuupai implements Suupai {
   }
 
   getName(): string {
-    return this.num + this.getPaiType().getNameSuffix();
+    return `${this.num}${this.getPaiType().getNameSuffix()}`;
   }
+
+  getSortIndex(): number {
+    return this.getNumber();
+  }
+
 }

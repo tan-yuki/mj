@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
@@ -17,20 +17,21 @@
         "app/**/*.ts"
     ],
     "files": [
-        "app/domain/model/haipai/exception/shouhai-exception.ts",
-        "app/domain/model/haipai/exception/tahai-exception.ts",
-        "app/domain/model/haipai/haipai.ts",
+        "app/domain/model/pai/abstract-pai.ts",
         "app/domain/model/pai/abstract-suupai.ts",
-        "app/domain/model/pai/exception/suupai-number-out-of-bound-exception.ts",
         "app/domain/model/pai/jihai.ts",
         "app/domain/model/pai/manzu.ts",
         "app/domain/model/pai/pai-collection.ts",
         "app/domain/model/pai/pai-type.ts",
-        "app/domain/model/pai/pai-yama.ts",
         "app/domain/model/pai/pai.ts",
         "app/domain/model/pai/pinzu.ts",
         "app/domain/model/pai/souzu.ts",
         "app/domain/model/pai/suupai.ts",
+        "app/domain/model/paiyama/paiyama.ts",
+        "app/domain/model/player/player-state.ts",
+        "app/domain/model/player/player.ts",
+        "app/domain/model/tehai/tehai-with-tsumo.ts",
+        "app/domain/model/tehai/tehai.ts",
         "app/util/collection/abstract-collection.ts",
         "app/util/collection/collection.ts"
     ]
