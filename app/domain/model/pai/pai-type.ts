@@ -16,6 +16,10 @@ export class PaiType {
     return this.nameSuffix;
   }
 
+  toString() {
+    return this.getName();
+  }
+
   static MANZU = new PaiType('萬子', 1, '萬');
   static PINZU = new PaiType('筒子', 2, '筒');
   static SOUZU = new PaiType('索子', 3, '索');

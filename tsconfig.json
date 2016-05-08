@@ -30,6 +30,7 @@
         "app/domain/model/paiyama/paiyama.ts",
         "app/domain/model/player/player-state.ts",
         "app/domain/model/player/player.ts",
+        "app/domain/model/tehai/exception/not-completed-tehai-fomat.ts",
         "app/domain/model/tehai/tehai-with-tsumo.ts",
         "app/domain/model/tehai/tehai.ts",
         "app/util/collection/abstract-collection.ts",

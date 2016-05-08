@@ -19,6 +19,15 @@ describe(`AbstractCollection`, () => {
       assert(newCollection instanceof PaiCollection);
     });
   });
+  describe(`#filter`, () => {
+    it(`should filter items that match the condition`, () => {
+      let collection = new PaiCollection([new Souzu(1), new Pinzu(2), new Manzu(1), new Souzu(2)]);
+      let newCollection = collection.filter((e) => e.getNumber() === 1);
+      assert(newCollection.length() === 2);
+      assert(newCollection.get(0).toString() === '1索');
+      assert(newCollection.get(1).toString() === '1萬');
+    });
+  });
   describe(`#deleteAt`, () => {
     it(`should delete entity positioned at this index`, () => {
       let collection = new PaiCollection([new Pinzu(1), new Souzu(1), new Manzu(1), new Pinzu(2)]);

@@ -17,6 +17,16 @@ describe(`PaiCollection`, () => {
       assert(newCollection instanceof PaiCollection);
     });
   });
+  describe(`#filter`, () => {
+    it(`should return new PaiCollection`, () => {
+      let collection = new PaiCollection([
+        new Souzu(1)
+      ]);
+      let newCollection = collection.filter((_) => false);
+
+      assert(newCollection instanceof PaiCollection);
+    });
+  });
   describe(`#toString`, () => {
     it(`should return this collection as string`, () => {
       let collection = new PaiCollection([

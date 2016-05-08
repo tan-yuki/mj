@@ -14,19 +14,6 @@ export abstract class AbstractCollection<T> implements Collection<T> {
     return this.newInstance(newEntities);
   }
 
-  groupBy(cb: (e:T) => any): {[key:string]: Array<T>} {
-    return lodash.groupBy(this.getEntities(), cb);
-  }
-
-  deleteFirstElementWith(cb: (e:T) => boolean): Collection<T> {
-    let index = lodash.findIndex(this.getEntities(), cb);
-    if (index > -1) {
-      return this.deleteAt(index);
-    }
-
-    return this;
-  }
-
   deleteAt(index: number): Collection<T> {
     let newEntities = this.createClonedEntities();
     let befores = newEntities.splice(0, index);
@@ -35,20 +22,50 @@ export abstract class AbstractCollection<T> implements Collection<T> {
     return this.newInstance(befores.concat(afters));
   }
 
+  deleteFirstElementWith(cb: (e:T) => boolean): Collection<T> {
+    let [_, collection] = this.shiftFirstElementWith(cb);
+
+    return collection;
+  }
+
+  filter(cb: (e:T) => boolean): Collection<T> {
+    return this.newInstance(this.getEntities().filter(cb));
+  }
+
+  get(index: number): T {
+    return this.getEntities()[index];
+  }
+
   getEntities(): Array<T> {
     return this.createClonedEntities();
   }
 
-  toArray(): Array<T> {
-    return this.getEntities();
+  groupBy(cb: (e:T) => any): {[key:string]: Array<T>} {
+    return lodash.groupBy(this.getEntities(), cb);
   }
 
   length(): number {
     return this.entities.length;
   }
 
-  get(index: number): T {
-    return this.getEntities()[index];
+  shift(): [T, Collection<T>]  {
+    let entities = this.getEntities();
+    let e = entities.shift();
+
+    return [e, this.newInstance(entities)];
+  }
+
+  shiftFirstElementWith(cb: (e:T) => boolean): [T, Collection<T>]  {
+    let index = lodash.findIndex(this.getEntities(), cb);
+    if (index > -1) {
+      return [this.get(index), this.deleteAt(index)];
+    }
+
+    return [null, this];
+  }
+
+  toArray(): Array<T> {
+    return this.getEntities();
   }
 
   private newInstance(entities: Array<T>): Collection<T> {
