@@ -36,7 +36,7 @@ describe(`PaiCollection`, () => {
         Jihai.HAKU
       ]);
 
-      assert(collection.toString() === '[1索,2筒,3萬,白]');
+      assert(collection.toString() === '[1s,2p,3m,haku]');
     });
   });
   describe(`#riipai`, () => {
@@ -59,7 +59,7 @@ describe(`PaiCollection`, () => {
       ]);
 
       assert(collection.riipai().toString() ===
-        '[1萬,1萬,9萬,9萬,9萬,1筒,6筒,9筒,1索,2索,3索,南,白,發]');
+        '[1m,1m,9m,9m,9m,1p,6p,9p,1s,2s,3s,nan,haku,hatsu]');
     });
   });
 });

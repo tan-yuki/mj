@@ -20,14 +20,14 @@ describe(`TehaiWithTsumo`, () => {
         tsumo: new Souzu(3),
         mentsu: {
           shunts: [
-            `[1萬,2萬,3萬]`,
-            `[1索,2索,3索]`,
-            `[2索,3索,4索]`
+            `[1m,2m,3m]`,
+            `[1s,2s,3s]`,
+            `[2s,3s,4s]`
           ],
           kotsus: [
-            `[2萬,2萬,2萬]`
+            `[2m,2m,2m]`
           ],
-          jantou: `[1萬,1萬]`
+          jantou: `[1m,1m]`
         }
       },
       {
@@ -39,14 +39,14 @@ describe(`TehaiWithTsumo`, () => {
         tsumo: Jihai.HAKU,
         mentsu: {
           shunts: [
-            `[7筒,8筒,9筒]`,
-            `[1索,2索,3索]`
+            `[7p,8p,9p]`,
+            `[1s,2s,3s]`
           ],
           kotsus: [
-            `[6筒,6筒,6筒]`,
-            `[白,白,白]`
+            `[6p,6p,6p]`,
+            `[haku,haku,haku]`
           ],
-          jantou: `[發,發]`
+          jantou: `[hatsu,hatsu]`
         }
       },
       {
@@ -59,14 +59,14 @@ describe(`TehaiWithTsumo`, () => {
         tsumo: new Souzu(2),
         mentsu: {
           shunts: [
-            `[3索,4索,5索]`,
-            `[6索,7索,8索]`
+            `[3s,4s,5s]`,
+            `[6s,7s,8s]`
           ],
           kotsus: [
-            `[1索,1索,1索]`,
-            `[9索,9索,9索]`
+            `[1s,1s,1s]`,
+            `[9s,9s,9s]`
           ],
-          jantou: `[2索,2索]`
+          jantou: `[2s,2s]`
         }
       },
       {
@@ -79,14 +79,14 @@ describe(`TehaiWithTsumo`, () => {
         tsumo: new Souzu(1),
         mentsu: {
           shunts: [
-            `[1索,2索,3索]`,
-            `[4索,5索,6索]`,
-            `[7索,8索,9索]`
+            `[1s,2s,3s]`,
+            `[4s,5s,6s]`,
+            `[7s,8s,9s]`
           ],
           kotsus: [
-            `[1索,1索,1索]`,
+            `[1s,1s,1s]`,
           ],
-          jantou: `[9索,9索]`
+          jantou: `[9s,9s]`
         }
       },
       {
@@ -99,13 +99,13 @@ describe(`TehaiWithTsumo`, () => {
         tsumo: new Souzu(6),
         mentsu: {
           shunts: [
-            `[1索,2索,3索]`,
-            `[1索,2索,3索]`,
-            `[4索,5索,6索]`,
-            `[4索,5索,6索]`,
+            `[1s,2s,3s]`,
+            `[1s,2s,3s]`,
+            `[4s,5s,6s]`,
+            `[4s,5s,6s]`,
           ],
           kotsus: [],
-          jantou: `[3索,3索]`
+          jantou: `[3s,3s]`
         }
       },
       {
@@ -121,12 +121,12 @@ describe(`TehaiWithTsumo`, () => {
           shunts: [
           ],
           kotsus: [
-            `[1索,1索,1索]`,
-            `[2索,2索,2索]`,
-            `[3索,3索,3索]`,
-            `[4索,4索,4索]`
+            `[1s,1s,1s]`,
+            `[2s,2s,2s]`,
+            `[3s,3s,3s]`,
+            `[4s,4s,4s]`
           ],
-          jantou: `[5索,5索]`
+          jantou: `[5s,5s]`
         }
       }
     ];

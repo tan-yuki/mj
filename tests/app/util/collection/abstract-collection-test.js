@@ -24,8 +24,8 @@ describe(`AbstractCollection`, () => {
       let collection = new PaiCollection([new Souzu(1), new Pinzu(2), new Manzu(1), new Souzu(2)]);
       let newCollection = collection.filter((e) => e.getNumber() === 1);
       assert(newCollection.length() === 2);
-      assert(newCollection.get(0).toString() === '1索');
-      assert(newCollection.get(1).toString() === '1萬');
+      assert(newCollection.get(0).toString() === '1s');
+      assert(newCollection.get(1).toString() === '1m');
     });
   });
   describe(`#deleteAt`, () => {
@@ -34,9 +34,9 @@ describe(`AbstractCollection`, () => {
       let newCollection = collection.deleteAt(1);
 
       assert(newCollection.length() === 3);
-      assert(newCollection.get(0).getName() === "1筒");
-      assert(newCollection.get(1).getName() === "1萬");
-      assert(newCollection.get(2).getName() === "2筒");
+      assert(newCollection.get(0).getName() === "1p");
+      assert(newCollection.get(1).getName() === "1m");
+      assert(newCollection.get(2).getName() === "2p");
     });
   });
   describe(`#deleteFirstElementWith`, () => {
@@ -47,9 +47,9 @@ describe(`AbstractCollection`, () => {
       });
 
       assert(newCollection.length() === 3);
-      assert(newCollection.get(0).getName() === "1索");
-      assert(newCollection.get(1).getName() === "1筒");
-      assert(newCollection.get(2).getName() === "1萬");
+      assert(newCollection.get(0).getName() === "1s");
+      assert(newCollection.get(1).getName() === "1p");
+      assert(newCollection.get(2).getName() === "1m");
     });
     it(`should not delete any entity if there is no elements match the condition`, () => {
       let collection = new PaiCollection([new Pinzu(1), new Souzu(1), new Manzu(1)]);
@@ -58,9 +58,9 @@ describe(`AbstractCollection`, () => {
       });
 
       assert(newCollection.length() === 3);
-      assert(newCollection.get(0).getName() === "1筒");
-      assert(newCollection.get(1).getName() === "1索");
-      assert(newCollection.get(2).getName() === "1萬");
+      assert(newCollection.get(0).getName() === "1p");
+      assert(newCollection.get(1).getName() === "1s");
+      assert(newCollection.get(2).getName() === "1m");
     });
   });
   describe(`#groupBy`, () => {
