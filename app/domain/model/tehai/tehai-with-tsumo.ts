@@ -9,6 +9,9 @@ import {PaiCollection} from "../pai/pai-collection";
 import {Tehai} from "./tehai";
 import {NotCompletedTehaiFormat} from "./exception/not-completed-tehai-fomat";
 
+const JANTOU_NUM = 2;
+const KOTSU_NUM  = 3;
+
 export interface IMentsu {
   shunts: Array<PaiCollection>;
   kotsus: Array<PaiCollection>;
@@ -35,7 +38,7 @@ export class TehaiWithTsumo {
   }
 
   /**
-   * 面子の要素に分けた状態で返す
+   * 面子の要素に分けた状態で返す.
    *
    * @return IMentsu
    * @throws NotCompletedTehaiFormat
@@ -44,39 +47,62 @@ export class TehaiWithTsumo {
   parseMentsu(): IMentsu {
     let sortedPais = this.getTehaiPais();
 
-    let remains: Array<Pai> = sortedPais;
-    let shunts: Array<Array<Pai>>;
-    let kotsus: Array<Array<Pai>>;
+    let remains: PaiCollection = sortedPais;
+    let shunts: Array<PaiCollection>;
+    let kotsus: Array<PaiCollection>;
     let jantou: Array<Pai>;
 
-    // parse shunts
-    let suupaiSortedPais = remains.filter((p) => !p.isJihai()).map((e) => <Suupai>e);
-    [shunts, remains] = this.parseShuntsu(suupaiSortedPais);
+    let jantouCandidates = this.getJantouCandidates(remains);
 
-    // parse kotsus
-    [kotsus, remains] = this.parseKotsu(remains);
+    let jantouCandidate;
+    while(jantouCandidate = jantouCandidates.shift()) {
+      let mentsuCandidates = remains.eliminatePai(jantouCandidate, JANTOU_NUM);
+      [shunts, kotsus] = this.parseShuntsuOrKotsu(mentsuCandidates);
 
-    // remains is jantou?
-    if (this.isJantou(remains)) {
-      jantou = remains;
-    } else {
+      // 和了の形としてパースできた場合
+      if (shunts.length || kotsus.length) {
+        jantou = [jantouCandidate, jantouCandidate];
+        break;
+      }
+    }
+
+    if (!shunts.length && !kotsus.length) {
       throw new NotCompletedTehaiFormat(`手牌がまだ和了の形ではありません: ${this.tehai.toString()}`);
     }
 
     return <IMentsu>{
-      "shunts": shunts.map((ps) => new PaiCollection(ps)),
-      "kotsus": kotsus.map((ps) => new PaiCollection(ps)),
-      "jantou": new PaiCollection(jantou)
+      shunts: shunts,
+      kotsus: kotsus,
+      jantou: new PaiCollection(jantou)
     };
   }
 
   /**
-   * 配の配列を順子に分けた状態で返す。
-   * 順子にできた配列と、順子に出来なかった配列を返す。
-   * 順子に出来た配列が存在している場合、順子の組み合わせの配列を一つの要素とした配列として返す。
+   * 雀頭候補の配を検索し、それらの配を返す
    *
-   * @param pais 数配の配の配列
-   * @return 第一要素: 面子の配列, 第二要素: 面子にできなかった残りの配
+   * @param pais
+   * @return 雀頭候補の配の配列Index
+   */
+  private getJantouCandidates(pais: PaiCollection): Array<Pai> {
+    let group = pais.groupBySameJanpai();
+    let jantous = [];
+
+    Object.keys(group).forEach((k) => {
+      let values = group[k];
+      if (values.length >= JANTOU_NUM) {
+        jantous.push(values[0]);
+      }
+    });
+
+    return jantous;
+  }
+
+  /**
+   * 配の配列を順子または刻子に分けた状態で返す。
+   * 順子または刻子にわけれなかった場合は順子も刻子も空の状態で返す
+   *
+   * @param pais 配の配列
+   * @return 第一要素: 順子の配列, 第二要素: 刻子の配列
    *
    * 下記の様な状態で返される想定
    * ```
@@ -85,56 +111,108 @@ export class TehaiWithTsumo {
    *      [new Souzu(1), new Souzu(2), new Souzu(3)],
    *      [new Souzu(3), new Souzu(4), new Souzu(5)],
    *    ],
-   *    [new Souzu(9), new Souzu(9)]
+   *    [
+   *      [new Pinzu(9), new Pinzu(9), new Pinzu(9)]
+   *    ]
    *  ]
    * ```
    *
    */
-  private parseShuntsu(pais: Array<Suupai>): [Array<Array<Pai>>, Array<Pai>] {
-    // 返り値
-    let maps:Array<Array<Pai>> = [];
-    let remains:Array<Pai>     = [];
-    let cursorCollection = new SuupaiCollection(pais);
+  private parseShuntsuOrKotsu(pais: PaiCollection): [Array<PaiCollection>, Array<PaiCollection>] {
+    let shunts, kotsus, remains;
 
-    while(true) {
-      let [p0, p0Collection] = cursorCollection.shift();
+    [shunts, remains] = this.parseShuntsu(pais);
+    [kotsus, remains] = this.parseKotsu(remains);
 
-      if (!p0) {
-        break;
-      }
-
-      // 次の数値の配を取得
-      let [p1, p1Collection] = p0Collection.shiftFirstElementWith((p) => {
-        return p.getPaiType() === p0.getPaiType() && p.getNumber() === p0.getNumber() + 1;
-      });
-      // 次の次の数値の配を取得
-      let [p2, p2Collection] = p1Collection.shiftFirstElementWith((p) => {
-        return p.getPaiType() === p0.getPaiType() && p.getNumber() === p0.getNumber() + 2;
-      });
-
-      // 連続した3つの数値の配がある場合はmapsに格納
-      if (p1 && p2) {
-        maps.push([p0, p1, p2]);
-
-        // カーソル用のcollectionを3つの要素を取り除いた値にする
-        cursorCollection = new SuupaiCollection(p2Collection.getEntities());
-        continue;
-      }
-
-      // 連続した3つの数値の配がなかった場合は
-      // 最初の要素をremainsに格納
-      remains.push(p0);
-      // カーソル用のcollectionを最初の要素のみを取り除いた値にする
-      cursorCollection = new SuupaiCollection(p0Collection.getEntities());
+    if (remains.length() === 0) {
+      return [shunts, kotsus];
     }
 
-    return [maps, remains];
+    return [[], []];
   }
 
   /**
-   * 配の配列を刻子に分けた状態で返す。
-   * 刻子にできた配列と、刻子に出来なかった配列を返す。
-   * 刻子に出来た配列が存在している場合、刻子の組み合わせの配列を一つの要素とした配列として返す。
+   * 順子と順子以外の配を返す
+   *
+   * @return 第一要素: 順子の配列, 第二要素: 残りの配列
+   *
+   * 下記の様な状態で返される想定
+   * ```
+   *  [
+   *    [
+   *      [new Souzu(1), new Souzu(2), new Souzu(3)],
+   *      [new Souzu(3), new Souzu(4), new Souzu(5)],
+   *    ],
+   *    [
+   *      [new Pinzu(9), new Pinzu(9), new Pinzu(9), Jihai.HAK, Jihai.HAKUU, Jihai.HAKU]
+   *    ]
+   *  ]
+   * ```
+   */
+  private parseShuntsu(pais: PaiCollection): [Array<PaiCollection>, PaiCollection] {
+
+    // 返り値
+    let shunts:Array<PaiCollection> = [];
+    let remains:PaiCollection = new PaiCollection(pais.getEntities());
+
+    let group = pais.groupBySameJanpai();
+
+    // 順子候補として3つ配が揃っているものは除外 (4つ揃っているものは除外しない)
+    let kotsuCandidateNames = Object.keys(group)
+      .map((k) => group[k])
+      .filter((ps) => ps.length === KOTSU_NUM)
+      .map((ps) => ps[0].toString());
+
+    let shuntsCandidates = pais.getEntities().filter((p) => {
+      return kotsuCandidateNames.indexOf(p.toString()) === -1;
+    });
+
+    // 字牌は除外
+    shuntsCandidates.forEach((candidate) => {
+      let [p0, p0Collection] = remains.shiftFirstElementWith((p) => p.equals(candidate));
+
+      // 次の数値の配を取得
+      let [p1, p1Collection] = p0Collection.shiftFirstElementWith((p) => {
+        return this.isNextValue(p0, p);
+      });
+
+      // 次の次の数値の配を取得
+      let [p2, p2Collection] = p1Collection.shiftFirstElementWith((p) => {
+        return this.isNextValue(p1, p);
+      });
+
+      // 連続した3つの数値の配がある場合はmapsに格納
+      if (p0 && p1 && p2) {
+        shunts.push(new PaiCollection([candidate, p1, p2]));
+
+        // 格納した配を除外したものを残りの配として格納
+        remains = new PaiCollection(p2Collection.getEntities());
+      }
+    });
+
+    // 除外した字牌を戻して返す
+    return [shunts, remains];
+  }
+
+  /**
+   * p1がp2の次の数牌だった場合にtrueを返す
+   *
+   * @param p1
+   * @param p2
+   *
+   * @return boolean
+   */
+  private isNextValue(p1: Pai, p2: Pai): boolean {
+    if (!p1 || !p2 || p1.isJihai() || p2.isJihai()) {
+      return false;
+    }
+
+    return p1.getPaiType() === p2.getPaiType() &&
+      (<Suupai>p1).getNumber() + 1 === (<Suupai>p2).getNumber();
+  }
+
+  /**
+   * 刻子と刻子以外の配を返す
    *
    * @param pais 配の配列
    * @return 第一要素: 面子の配列, 第二要素: 面子にできなかった残りの配
@@ -146,28 +224,24 @@ export class TehaiWithTsumo {
    *      [new Souzu(1), new Souzu(1), new Souzu(1)],
    *      [new Souzu(3), new Souzu(3), new Souzu(3)],
    *    ],
-   *    [new Souzu(9), new Souzu(9)]
+   *    []
    *  ]
    * ```
-   *
    */
-  private parseKotsu(pais: Array<Pai>): [Array<Array<Pai>>, Array<Pai>] {
-    let maps: Array<Array<Pai>> = [];
+  private parseKotsu(pais: PaiCollection): [Array<PaiCollection>, PaiCollection] {
+    let group = pais.groupBySameJanpai();
 
-    let cursorCollection = new PaiCollection(pais);
-    let group = cursorCollection.groupBy((e) => e.toString());
+    let kotsuPais = Object.keys(group)
+      .map((k) => group[k])
+      .filter((ps) => ps.length >= KOTSU_NUM)
+      .map((ps) => ps[0]);
 
-    // 返り値の型
-    //   - 第一要素: 刻子の集合
-    //   - 第二要素: その他の配の集合
-    return lodash.reduce<string, [Array<Array<Pai>>, Array<Pai>]>(Object.keys(group), (previous, name) => {
-      if (group[name].length >= 3) {
-        previous[0].push(group[name]);
-      } else {
-        previous[1] = previous[1].concat(group[name]);
-      }
-      return previous;
-    }, [[], []]);
+    let kotsus = kotsuPais.map((p) => new PaiCollection(lodash.fill(Array(KOTSU_NUM), p)));
+    let remains = kotsuPais.reduce((previous, p) => {
+      return previous.eliminatePai(p, KOTSU_NUM);
+    }, pais);
+
+    return [kotsus, remains];
   }
 
   /**
@@ -180,7 +254,7 @@ export class TehaiWithTsumo {
     let collection = new PaiCollection(pais);
     let group = collection.groupBy((e) => e.toString());
 
-    if (collection.length() === 2 && Object.keys(group).length === 1) {
+    if (collection.length() === JANTOU_NUM && Object.keys(group).length === 1) {
       return true;
     }
 
@@ -190,32 +264,14 @@ export class TehaiWithTsumo {
   /**
    * ツモ後の手牌をリーパイした後の配のリストを返す
    *
-   * @return Array<Pai>
+   * @return PaiCollection
    */
-  private getTehaiPais(): Array<Pai> {
+  private getTehaiPais(): PaiCollection  {
     let pais = this.tehai.getEntities();
     pais.push(this.tsumo);
     let collection = new PaiCollection(pais);
 
-    return collection.riipai().getEntities();
-  }
-
-  /**
-   * 和了かどうかを判定する
-   */
-  private isHora(): boolean {
-    return false;
-  }
-
-  /**
-   * 七対子かどうかを判定する
-   */
-  private isChitoitsu(): boolean {
-    return false;
-  }
-
-  private isYakuman(): boolean {
-    return false;
+    return collection.riipai();
   }
 
 }

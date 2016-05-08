@@ -1,7 +1,8 @@
 export interface Collection<T> {
   add(entity: T): Collection<T>;
-  deleteAt(index: number): Collection<T>;
+  deleteAt(indexes: number|Array<number>): Collection<T>;
   deleteFirstElementWith(cb: (e:T) => boolean): Collection<T>;
+  eliminateElementsWith(cb: (e:T) => boolean): [Collection<T>, Collection<T>];
   filter(cb: (e:T) => boolean): Collection<T>;
   get(index: number): T;
   getEntities(): Array<T>;

@@ -11,6 +11,14 @@ export abstract class AbstractPai implements Pai {
     return this.getPaiType() === PaiType.JIHAI;
   }
 
+  isSuupai(): boolean {
+    return !this.isJihai();
+  }
+
+  equals(p: Pai): boolean {
+    return p.toString() === this.toString();
+  }
+
   abstract getSortIndex(): number;
   abstract getPaiType(): PaiType;
   abstract getName(): string;

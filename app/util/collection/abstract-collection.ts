@@ -14,18 +14,50 @@ export abstract class AbstractCollection<T> implements Collection<T> {
     return this.newInstance(newEntities);
   }
 
-  deleteAt(index: number): Collection<T> {
-    let newEntities = this.createClonedEntities();
-    let befores = newEntities.splice(0, index);
-    let afters  = newEntities.splice(1);
+  deleteAt(indexes: number|Array<number>): Collection<T> {
+    let idxs = <Array<number>>(Array.isArray(indexes) ? indexes : [indexes]);
 
-    return this.newInstance(befores.concat(afters));
+    let entities = this.getEntities();
+    idxs.forEach((i) => {
+      entities[i] = undefined;
+    });
+
+    return this.newInstance(entities.filter((e) => e !== undefined));
   }
 
   deleteFirstElementWith(cb: (e:T) => boolean): Collection<T> {
     let [_, collection] = this.shiftFirstElementWith(cb);
 
     return collection;
+  }
+
+  /**
+   * 条件にマッチした要素を全て取り除く
+   *
+   * @param cb 条件関数。trueを返す要素の場合は取り除く。
+   * @return 取り除いた結果
+   *     第一要素: 取り除かれた要素のCollection
+   *     第二要素: 取り除かれた後のCollection
+   */
+  eliminateElementsWith(cb: (e:T) => boolean): [Collection<T>, Collection<T>] {
+    let eliminates = this.filter(cb);
+    let remains    = this.filter((e) => !cb(e));
+
+    return [eliminates, remains];
+  }
+
+  /**
+   * 条件にマッチした要素のIndex番号を全て返す
+   *
+   * @return index番号の配列
+   */
+  getAllIndexWith(cb:(e:T) => boolean): Array<number> {
+    let indexes = [];
+    this.getEntities().forEach((e, index) => {
+      cb(e) && indexes.push(index);
+    });
+
+    return indexes;
   }
 
   filter(cb: (e:T) => boolean): Collection<T> {
