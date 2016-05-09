@@ -15,7 +15,7 @@ export class Paiyama extends PaiCollection {
     super(pais);
   }
 
-  initialize(): Paiyama {
+  static initialize(): Paiyama {
     let pais = [
       // manzu
       new Manzu(1), new Manzu(2), new Manzu(3), new Manzu(4), new Manzu(5),
@@ -46,18 +46,26 @@ export class Paiyama extends PaiCollection {
    */
   serveTehaiToPlayer(playerNum: number): [Array<Tehai>, Paiyama] {
 
-    let entities = this.getEntities();
+    let entities = this.getAllPai();
 
-    let tehais = Array(playerNum).map(() => {
-      // TODO: 14というマジックナンバー置き換え
-      let pais = entities.splice(0, 14);
-      return new Tehai(pais);
-    });
+    let tehais = [];
+    for (let i = 0; i < playerNum; i++) {
+      // TODO: 13というマジックナンバー置き換え
+      let pais = entities.splice(0, 13);
+      tehais.push(new Tehai(pais));
+    }
 
     return [tehais, new Paiyama(entities)];
   }
 
   getAllPai(): Array<Pai> {
     return this.getEntities();
+  }
+
+  tsumo(): [Pai, Paiyama] {
+    let pais = this.getAllPai();
+    let tsumoPai = pais.shift();
+
+    return [tsumoPai, new Paiyama(pais)];
   }
 }

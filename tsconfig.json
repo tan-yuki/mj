@@ -17,6 +17,7 @@
         "app/**/*.ts"
     ],
     "files": [
+        "app/application/cli/try-tenho.ts",
         "app/domain/model/pai/abstract-pai.ts",
         "app/domain/model/pai/abstract-suupai.ts",
         "app/domain/model/pai/jihai.ts",

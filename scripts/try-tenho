@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+var module = require(__dirname + "/../dist/application/cli/try-tenho.js");
+module.tryTenho();

@@ -6,7 +6,7 @@ import {Tehai}   from "../../../../../dist/domain/model/tehai/tehai";
 describe(`Paiyama`, () => {
   let yama;
   before(() => {
-    yama = (new Paiyama()).initialize();
+    yama = Paiyama.initialize();
   });
 
   describe(`#initialize`, () => {
@@ -16,7 +16,7 @@ describe(`Paiyama`, () => {
   });
 
   describe(`#serveTehaiToPlayer`, () => {
-    it(`should has return tehai and remain paiyama`, () => {
+    it(`should has return tehai and remain paiyama with 4 player`, () => {
       let [tehais, remains] = yama.serveTehaiToPlayer(4);
 
       assert(tehais.length === 4);
@@ -25,7 +25,18 @@ describe(`Paiyama`, () => {
       });
       assert(remains instanceof Paiyama);
 
-      assert(remains.getAllPai().length = 136 - 13 * 4);
+      assert(remains.getAllPai().length === 136 - 13 * 4);
+    });
+    it(`should has return tehai and remain paiyama with 1 player`, () => {
+      let [tehais, remains] = yama.serveTehaiToPlayer(1);
+
+      assert(tehais.length === 1);
+      tehais.forEach((h) => {
+        assert(h instanceof Tehai);
+      });
+      assert(remains instanceof Paiyama);
+
+      assert(remains.getAllPai().length === 136 - 13);
     });
   });
 });
