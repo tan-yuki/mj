@@ -11,8 +11,14 @@ import {NotCompletedTehaiFormat} from "./exception/not-completed-tehai-fomat";
 
 const JANTOU_NUM = 2;
 const KOTSU_NUM  = 3;
+const CHITOITSU_NUM = 7;
 
 export interface IMentsu {
+  chiitoitsus?: Array<PaiCollection>;
+  mentsu?: INormalMentsu;
+}
+
+export interface INormalMentsu {
   shunts: Array<PaiCollection>;
   kotsus: Array<PaiCollection>;
   jantou: PaiCollection;
@@ -46,13 +52,20 @@ export class TehaiWithTsumo {
    */
   parseMentsu(): IMentsu {
     let sortedPais = this.getTehaiPais();
+    let group: {[key:string]: PaiCollection} = sortedPais.groupBySameJanpai();
+
+    if (this.isChitoitsu(group)) {
+      return <IMentsu>{
+        chiitoitsus: lodash.values<PaiCollection>(group)
+      };
+    }
 
     let remains: PaiCollection = sortedPais;
     let shunts: Array<PaiCollection>;
     let kotsus: Array<PaiCollection>;
     let jantou: Array<Pai>;
 
-    let jantouCandidates = this.getJantouCandidates(remains);
+    let jantouCandidates = this.getJantouCandidates(group);
 
     let jantouCandidate;
     while(jantouCandidate = jantouCandidates.shift()) {
@@ -71,30 +84,48 @@ export class TehaiWithTsumo {
     }
 
     return <IMentsu>{
-      shunts: shunts,
-      kotsus: kotsus,
-      jantou: new PaiCollection(jantou)
+      mentsu: <INormalMentsu>{
+        shunts: shunts,
+        kotsus: kotsus,
+        jantou: new PaiCollection(jantou)
+      }
     };
   }
 
   /**
    * 雀頭候補の配を検索し、それらの配を返す
    *
-   * @param pais
+   * @param group
    * @return 雀頭候補の配の配列Index
    */
-  private getJantouCandidates(pais: PaiCollection): Array<Pai> {
-    let group = pais.groupBySameJanpai();
+  private getJantouCandidates(group: {[key:string]: PaiCollection}): Array<Pai> {
     let jantous = [];
 
     Object.keys(group).forEach((k) => {
-      let values = group[k];
-      if (values.length >= JANTOU_NUM) {
-        jantous.push(values[0]);
+      let collection = group[k];
+      if (collection.length() >= JANTOU_NUM) {
+        jantous.push(collection.get(0));
       }
     });
 
     return jantous;
+  }
+
+  /**
+   * 七対子だった場合はtrueを返す
+   *
+   * @param group
+   * @return boolean
+   */
+  private isChitoitsu(group: {[key:string]: PaiCollection}): boolean {
+    let keys = Object.keys(group);
+    if (keys.length !== CHITOITSU_NUM) {
+      return false;
+    }
+
+    return lodash.every(keys, (k) => {
+      return group[k].length() === 2;
+    });
   }
 
   /**
@@ -154,14 +185,13 @@ export class TehaiWithTsumo {
     // 返り値
     let shunts:Array<PaiCollection> = [];
     let remains:PaiCollection = new PaiCollection(pais.getEntities());
-
     let group = pais.groupBySameJanpai();
 
     // 順子候補として3つ配が揃っているものは除外 (4つ揃っているものは除外しない)
     let kotsuCandidateNames = Object.keys(group)
       .map((k) => group[k])
-      .filter((ps) => ps.length === KOTSU_NUM)
-      .map((ps) => ps[0].toString());
+      .filter((ps) => ps.length() === KOTSU_NUM)
+      .map((ps) => ps.get(0).toString());
 
     let shuntsCandidates = pais.getEntities().filter((p) => {
       return kotsuCandidateNames.indexOf(p.toString()) === -1;
@@ -233,8 +263,8 @@ export class TehaiWithTsumo {
 
     let kotsuPais = Object.keys(group)
       .map((k) => group[k])
-      .filter((ps) => ps.length >= KOTSU_NUM)
-      .map((ps) => ps[0]);
+      .filter((ps) => ps.length() >= KOTSU_NUM)
+      .map((ps) => ps.get(0));
 
     let kotsus = kotsuPais.map((p) => new PaiCollection(lodash.fill(Array(KOTSU_NUM), p)));
     let remains = kotsuPais.reduce((previous, p) => {
@@ -242,23 +272,6 @@ export class TehaiWithTsumo {
     }, pais);
 
     return [kotsus, remains];
-  }
-
-  /**
-   * 雀頭の条件を満たす配の配列であればtrue,そうでなければfalseを返す
-   *
-   * @param pais
-   * @return boolean
-   */
-  private isJantou(pais: Array<Pai>): boolean {
-    let collection = new PaiCollection(pais);
-    let group = collection.groupBy((e) => e.toString());
-
-    if (collection.length() === JANTOU_NUM && Object.keys(group).length === 1) {
-      return true;
-    }
-
-    return false;
   }
 
   /**

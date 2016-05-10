@@ -15,8 +15,15 @@ export class PaiCollection extends AbstractCollection<Pai> {
    *
    * @return key: 雀牌名, value: 雀牌のCollection
    */
-  groupBySameJanpai(): {[key:string]: Array<Pai>} {
-    return this.groupBy((p) => p.toString());
+  groupBySameJanpai(): {[key:string]: PaiCollection} {
+    let arrayGroup = this.groupBy((p) => p.toString());
+
+    // collectionにして返す
+    let acc = <{[key:string]: PaiCollection}>{};
+    return Object.keys(arrayGroup).reduce((obj, paiName) => {
+      obj[paiName] = new PaiCollection(arrayGroup[paiName]);
+      return obj;
+    }, acc);
   }
 
   riipai(): PaiCollection {

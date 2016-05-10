@@ -10,7 +10,7 @@ import {Jihai} from "../../../../../dist/domain/model/pai/jihai";
 
 describe(`TehaiWithTsumo`, () => {
   describe(`#parseMentsu`, () => {
-    let dataProvider = [
+    let normalMentsuDataProvider = [
       {
         tehai: new Tehai([
           new Souzu(1), new Souzu(2), new Souzu(2), new Souzu(3), new Souzu(4),
@@ -130,14 +130,14 @@ describe(`TehaiWithTsumo`, () => {
         }
       }
     ];
-    dataProvider.forEach((data, index) => {
-      it(`should return mentsu #${index}`, () => {
+    normalMentsuDataProvider.forEach((data, index) => {
+      it(`should return normal mentsu #${index}`, () => {
         let tehai = data.tehai
         let tsumo = data.tsumo
-        let expectsMentsu = data.mentsu
+        let expectsMentsu = data.mentsu;
 
         let tehaiWithTsumo = new TehaiWithTsumo(tehai, tsumo);
-        let actualMentsu = tehaiWithTsumo.parseMentsu();
+        let actualMentsu = tehaiWithTsumo.parseMentsu().mentsu;
 
         assert(expectsMentsu.shunts.length === actualMentsu.shunts.length);
         assert(expectsMentsu.kotsus.length === actualMentsu.kotsus.length);
@@ -149,6 +149,23 @@ describe(`TehaiWithTsumo`, () => {
           assert(expectsMentsu.kotsus[index] === actualMentsu.kotsus[index].toString());
         });
         assert(expectsMentsu.jantou === actualMentsu.jantou.toString());
+      });
+    });
+    it(`should return chiitoitsu mentsu`, () => {
+      let tehai = new Tehai([
+        new Souzu(1), new Souzu(1), new Souzu(7), new Souzu(7),
+        new Manzu(2), new Manzu(2),
+        new Pinzu(9), new Pinzu(9),
+        Jihai.TON, Jihai.TON, Jihai.HAKU, Jihai.HATSU, Jihai.HATSU
+      ]);
+      let tsumo = Jihai.HAKU;
+
+      let tehaiWithTsumo = new TehaiWithTsumo(tehai, tsumo);
+      let actualMentsu = tehaiWithTsumo.parseMentsu().chiitoitsus;
+
+      assert(actualMentsu.length === 7);
+      actualMentsu.forEach((pais) => {
+        assert(pais.length() === 2);
       });
     });
     it(`should throw exception if this is not completed format`, () => {

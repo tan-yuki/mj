@@ -29,14 +29,22 @@ function createTehaiWithTsumo(): TehaiWithTsumo {
 }
 
 function successTehho(tryCount:number, mentsu: IMentsu): void {
-  let mentsString = '[' +
-    mentsu.jantou.toString() + ',' +
-    mentsu.shunts.map(function(pais) {
-      return pais.toString();
-    }).join(',') +
-    mentsu.kotsus.map(function(pais) {
-      return pais.toString();
-    }).join(',') + ']';
+  let mentsString = '';
+  if (mentsu.chiitoitsus) {
+    mentsString = '[' +
+      mentsu.chiitoitsus.map((pais) => {
+        return pais.toString();
+      }).join(',') + ']';
+  } else {
+    mentsString = '[' +
+      mentsu.mentsu.jantou.toString() + ',' +
+      mentsu.mentsu.shunts.map((pais) => {
+        return pais.toString();
+      }).join(',') +
+      mentsu.mentsu.kotsus.map((pais) => {
+        return pais.toString();
+      }).join(',') + ']';
+  }
 
   console.log(`[SUCCESS]:`);
   console.log(`  - Try count: ${tryCount}`);
