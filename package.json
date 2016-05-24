@@ -2,11 +2,13 @@
   "name": "mj",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "test": "npm run test",
   "scripts": {
+    "prepublish": "npm run build",
+    "tsc": "tsc -p ./",
     "clean": "rm -rf ./dist/",
-    "build": "npm run clean && tsconfig -u && tsc -p ./",
+    "build": "npm run clean && tsconfig -u && npm run tsc",
     "test": "npm run build && mocha --compilers js:babel-register ./tests/**/*-test.js"
   },
   "author": "",
